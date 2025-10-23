@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Button, Platform, useColorScheme } from 'react-native';
+import { Button, Platform, useColorScheme, View } from 'react-native'; // Added View
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -16,7 +16,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: true, // Show header to place the logout button
+        headerShown: true,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
@@ -68,6 +68,17 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
         }}
       />
+      {/* Edit Profile Screen Configuration */}
+      <Tabs.Screen
+         name="edit-profile" // Name matches the file: edit-profile.tsx
+         options={{
+           title: 'Edit Profile',
+           // href: null, // <-- REMOVED THIS LINE
+           tabBarButton: () => null, // This correctly hides the tab
+           // Optionally hide headerRight for this screen if Logout isn't needed here
+           // headerRight: () => null,
+         }}
+       />
     </Tabs>
   );
 }
