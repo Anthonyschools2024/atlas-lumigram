@@ -14,13 +14,15 @@
       "backgroundColor": "#00003C"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fragro.lumigram" // Added for iOS consistency
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.fragro.lumigram" // Added Android package name
     },
     "web": {
       "output": "static",

@@ -9,27 +9,36 @@ import {
   Image,
   useColorScheme,
   Platform,
+  ActivityIndicator
 } from "react-native";
-import { Colors } from "@/constants/Colors"; // Import Colors
-import { useState } from "react";
+import { Colors } from "@/constants/Colors";
+import React, { useState } from "react";
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { login, authError, loadingAuthAction } = useAuth(); // Get loading state
   const colorScheme = useColorScheme() ?? "light";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // Removed local loading state, use context's loadingAuthAction instead
 
-  const styles = StyleSheet.create({
+  const handleLogin = async () => {
+    // No need to set local loading state
+    await login(email, password);
+    // No need to unset local loading state
+  };
+
+   // Styles remain the same
+   const styles = StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
       padding: 40,
-      backgroundColor: Colors.dark.background, // Dark background
+      backgroundColor: Colors.dark.background,
     },
     logo: {
-      width: 150, // Adjust size as needed
-      height: 100, // Adjust size as needed
+      width: 150,
+      height: 100,
       resizeMode: "contain",
       marginBottom: 40,
     },
@@ -37,30 +46,31 @@ export default function LoginScreen() {
       fontSize: 24,
       fontWeight: "bold",
       marginBottom: 30,
-      color: Colors.dark.text, // White text
+      color: Colors.dark.text,
     },
     input: {
       width: "100%",
       height: 50,
       borderWidth: 1,
-      borderColor: Colors.dark.icon, // Use a subtle border color
+      borderColor: Colors.dark.icon,
       borderRadius: 8,
       paddingHorizontal: 15,
       marginBottom: 15,
-      color: Colors.dark.text, // White text for input
+      color: Colors.dark.text,
       fontSize: 16,
     },
     button: {
       width: "100%",
       height: 50,
-      backgroundColor: Colors.light.tint, // Teal button background
+      backgroundColor: Colors.light.tint,
       justifyContent: "center",
       alignItems: "center",
       borderRadius: 8,
       marginBottom: 15,
+      flexDirection: 'row',
     },
     buttonText: {
-      color: Colors.dark.background, // Dark text on button
+      color: Colors.dark.background,
       fontSize: 16,
       fontWeight: "bold",
     },
@@ -71,21 +81,26 @@ export default function LoginScreen() {
       alignItems: "center",
       borderRadius: 8,
       borderWidth: 1,
-      borderColor: Colors.light.tint, // Teal border for secondary button
+      borderColor: Colors.light.tint,
     },
     linkButtonText: {
-      color: Colors.light.tint, // Teal text for secondary button link
+      color: Colors.light.tint,
       fontSize: 16,
     },
     link: {
-      width: "100%", // Make link take full width for touch area
+      width: "100%",
     },
+    errorText: {
+       color: 'red',
+       marginBottom: 10,
+       textAlign: 'center',
+       minHeight: 20, // Ensure space for error message
+    }
   });
 
 
   return (
     <ThemedView style={styles.container}>
-      {/* Assuming logo.png is in assets/images */}
       <Image
         source={require("@/assets/images/logo.png")}
         style={styles.logo}
@@ -95,31 +110,40 @@ export default function LoginScreen() {
         Login
       </ThemedText>
 
+      {/* Display Authentication Error */}
+      <ThemedText style={styles.errorText}>{authError || ' '}</ThemedText>
+
       <TextInput
         style={styles.input}
         placeholder="Email"
-        placeholderTextColor={Colors.dark.icon} // Lighter placeholder text
+        placeholderTextColor={Colors.dark.icon}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
+        editable={!loadingAuthAction} // Use context loading state
       />
 
       <TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor={Colors.dark.icon} // Lighter placeholder text
+        placeholderTextColor={Colors.dark.icon}
         value={password}
         onChangeText={setPassword}
-        secureTextEntry={true} // Hide password
+        secureTextEntry={true}
+        editable={!loadingAuthAction} // Use context loading state
       />
 
-      <TouchableOpacity style={styles.button} onPress={login}>
-        <ThemedText style={styles.buttonText}>Sign In</ThemedText>
+      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loadingAuthAction}>
+        {loadingAuthAction ? ( // Use context loading state
+          <ActivityIndicator color={Colors.dark.background} />
+        ) : (
+          <ThemedText style={styles.buttonText}>Sign In</ThemedText>
+        )}
       </TouchableOpacity>
 
       <Link href="/register" asChild style={styles.link}>
-         <TouchableOpacity style={styles.linkButton}>
+         <TouchableOpacity style={styles.linkButton} disabled={loadingAuthAction}>
             <ThemedText style={styles.linkButtonText}>Create a new account</ThemedText>
          </TouchableOpacity>
       </Link>
